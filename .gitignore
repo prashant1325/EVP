@@ -1,0 +1,11 @@
+# frontend
+evp-frontend/node_modules
+evp-frontend/dist
+evp-frontend/.env
+
+# backend
+evp-backend/node_modules
+evp-backend/.env
+
+# common
+.DS_Store
