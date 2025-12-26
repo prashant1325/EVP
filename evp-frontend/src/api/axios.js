@@ -1,11 +1,11 @@
 import axios from "axios";
 
 /*
-  ✅ Uses ENV variable (Netlify / Local)
-  ❌ No hardcoded localhost
+  ✅ Connected to LIVE backend
+  ❌ No localhost
 */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // ✅ FIX HERE
+  baseURL: "https://backend-evp.vercel.app", // ✅ BACKEND LINK ADDED
   withCredentials: true,
 });
 
