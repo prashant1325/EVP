@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+const connectDB = require("./config/db"); // ✅ ADD THIS
 
 /* ===== ROUTES ===== */
 const adminRoutes = require("./routes/admin.routes");
@@ -11,11 +12,11 @@ const userAuthRoutes = require("./routes/userAuth.routes");
 
 const app = express();
 
+/* ================= CONNECT DATABASE (VERCEL FIX) ================= */
+// ✅ REQUIRED because server.js is NOT used by Vercel
+connectDB();
+
 /* ================= CORS ================= */
-/*
-  ✔ Local development
-  ✔ Netlify production
-*/
 app.use(
   cors({
     origin: [
