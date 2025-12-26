@@ -23,14 +23,13 @@ exports.userLogin = async (req, res) => {
       });
     }
 
-    if (user.status?.toLowerCase() !== "active") {
+    if (user.status && user.status.toLowerCase() !== "active") {
       return res.status(403).json({
         message: "User account is inactive",
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return res.status(401).json({
         message: "Invalid email or password",
@@ -43,9 +42,17 @@ exports.userLogin = async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    /* ✅ SET COOKIE (CRITICAL FOR VERCEL) */
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,        // HTTPS only
+      sameSite: "none",    // cross-domain
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     return res.status(200).json({
+      success: true,
       message: "Login successful",
-      token,
       user: {
         id: user._id,
         name: user.name,

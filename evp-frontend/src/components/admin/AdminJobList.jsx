@@ -26,22 +26,24 @@ const AdminJobList = () => {
     const fetchJobs = async () => {
       try {
         const res = await api.get("/api/jobs");
-        setJobs(res.data);
+
+        // ✅ FIX FOR PRODUCTION
+        setJobs(res.data.jobs || []);
       } catch {
         setError("Failed to synchronize with the job database.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchJobs();
   }, []);
 
-  /* ================= UPDATE STATUS (Approve/Reject) ================= */
+  /* ================= UPDATE STATUS ================= */
   const updateStatus = async (id, status) => {
     try {
       const res = await api.patch(`/api/jobs/${id}/status`, { status });
-      
-      // Update local state so UI reflects the change immediately
+
       setJobs((prev) =>
         prev.map((job) =>
           job._id === id ? { ...job, status: res.data.job.status } : job
@@ -57,7 +59,7 @@ const AdminJobList = () => {
     if (!confirm("Are you sure you want to remove this job listing?")) return;
     try {
       await api.delete(`/api/jobs/${id}`);
-      setJobs(jobs.filter((job) => job._id !== id));
+      setJobs((prev) => prev.filter((job) => job._id !== id));
     } catch {
       alert("System error: Could not delete the record.");
     }
@@ -73,7 +75,7 @@ const AdminJobList = () => {
       <AdminNavbar />
 
       <div className="max-w-7xl mx-auto pt-28 px-6 pb-20">
-        
+
         {/* ================= HEADER ================= */}
         <div className="flex flex-col md:flex-row justify-between gap-6 mb-12">
           <div>
@@ -94,7 +96,7 @@ const AdminJobList = () => {
           </Link>
         </div>
 
-        {/* ================= LOADING & ERROR ================= */}
+        {/* ================= LOADING ================= */}
         {loading && (
           <div className="flex flex-col items-center py-20 opacity-50">
             <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -102,6 +104,7 @@ const AdminJobList = () => {
           </div>
         )}
 
+        {/* ================= ERROR ================= */}
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-xl flex items-center gap-4 text-red-400">
             <AlertCircle /> {error}
@@ -112,7 +115,9 @@ const AdminJobList = () => {
         {!loading && jobs.length === 0 ? (
           <div className="text-center py-24 bg-[#112240]/30 border border-dashed border-white/10 rounded-3xl">
             <Briefcase size={48} className="mx-auto text-slate-700 mb-4" />
-            <h3 className="text-xl font-bold text-slate-400">No jobs listed</h3>
+            <h3 className="text-xl font-bold text-slate-400">
+              No jobs listed
+            </h3>
           </div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-6">
@@ -120,10 +125,12 @@ const AdminJobList = () => {
               <div
                 key={job._id}
                 className={`relative bg-[#112240]/50 border border-white/5 rounded-2xl p-8 transition-all hover:border-yellow-400/30 ${
-                  job.status === "rejected" ? "opacity-60 grayscale-[0.5]" : ""
+                  job.status === "rejected"
+                    ? "opacity-60 grayscale-[0.5]"
+                    : ""
                 }`}
               >
-                {/* ================= STATUS BADGE ================= */}
+                {/* ================= STATUS ================= */}
                 <span
                   className={`inline-block text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4
                     ${
@@ -132,62 +139,45 @@ const AdminJobList = () => {
                         : job.status === "rejected"
                         ? "bg-red-500/10 text-red-400"
                         : "bg-yellow-400/10 text-yellow-400"
-                    }
-                  `}
+                    }`}
                 >
                   {job.status || "pending"}
                 </span>
 
-                {/* ================= ACTION BUTTONS (The 4 Buttons) ================= */}
+                {/* ================= ACTIONS ================= */}
                 <div className="absolute top-6 right-6 flex gap-2">
-                  {/* 1. APPROVE */}
                   <button
                     onClick={() => updateStatus(job._id, "approved")}
                     disabled={job.status === "approved"}
-                    title="Approve"
-                    className={`p-3 rounded-xl transition ${
-                      job.status === "approved" 
-                      ? "bg-green-500 text-white opacity-50 cursor-not-allowed" 
-                      : "bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white"
-                    }`}
+                    className="p-3 bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white rounded-xl transition"
                   >
                     <CheckCircle size={18} />
                   </button>
 
-                  {/* 2. REJECT */}
                   <button
                     onClick={() => updateStatus(job._id, "rejected")}
                     disabled={job.status === "rejected"}
-                    title="Reject"
-                    className={`p-3 rounded-xl transition ${
-                      job.status === "rejected" 
-                      ? "bg-red-500 text-white opacity-50 cursor-not-allowed" 
-                      : "bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
-                    }`}
+                    className="p-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition"
                   >
                     <XCircle size={18} />
                   </button>
 
-                  {/* 3. EDIT */}
                   <button
                     onClick={() => handleEdit(job)}
-                    title="Edit"
                     className="p-3 bg-white/5 text-slate-300 hover:bg-yellow-400 hover:text-[#020c1b] rounded-xl transition"
                   >
                     <Edit size={18} />
                   </button>
 
-                  {/* 4. DELETE */}
                   <button
                     onClick={() => handleDelete(job._id)}
-                    title="Delete"
                     className="p-3 bg-white/5 text-slate-300 hover:bg-red-600 hover:text-white rounded-xl transition"
                   >
                     <Trash2 size={18} />
                   </button>
                 </div>
 
-                {/* ================= JOB INFO ================= */}
+                {/* ================= INFO ================= */}
                 <h2 className="text-2xl font-bold mt-6">{job.title}</h2>
                 <p className="text-slate-400 mt-1">{job.company}</p>
 
@@ -208,9 +198,9 @@ const AdminJobList = () => {
                 <p className="text-slate-400 text-sm mt-4 line-clamp-2">
                   {job.description}
                 </p>
-                
+
                 {job.status === "rejected" && (
-                  <p className="text-red-400 text-[10px] mt-4 font-bold uppercase tracking-tighter italic">
+                  <p className="text-red-400 text-[10px] mt-4 font-bold uppercase italic">
                     * This job is hidden from users
                   </p>
                 )}

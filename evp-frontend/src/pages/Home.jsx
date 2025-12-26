@@ -19,7 +19,7 @@ import heroBg from "../assets/images/bg.png";
 import logo from "../assets/images/sticker-logo.png";
 import ApplyJobModal from "../components/ApplyJobModal";
 
-// Animation Variants
+/* ================= ANIMATIONS ================= */
 const fadeUp = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -42,24 +42,27 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState(null);
 
-  // Fetch approved jobs
+  /* ================= FETCH APPROVED JOBS ================= */
   useEffect(() => {
     const fetchLiveJobs = async () => {
       try {
         const res = await api.get("/api/jobs/approved");
-        setLiveJobs(res.data.slice(0, 3));
+
+        // ✅ FIX FOR PRODUCTION (NETLIFY)
+        setLiveJobs(res.data.jobs?.slice(0, 3) || []);
       } catch (error) {
         console.error("Error fetching jobs for home:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchLiveJobs();
   }, []);
 
   return (
     <div className="min-h-screen bg-[#0a192f] text-white selection:bg-yellow-400 selection:text-black font-sans">
-      
+
       {/* ================= HERO SECTION ================= */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <motion.div
@@ -119,60 +122,20 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ================= FEATURES SECTION ================= */}
-      <section className="py-32 bg-[#0a192f] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Why Choose EVP?</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              We are revolutionizing employment verification with blockchain-grade security and real-time reputation tracking.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            {[
-              {
-                icon: <FiShield className="w-8 h-8 text-yellow-400" />,
-                title: "Verified Identity",
-                desc: "Every professional on our platform is pre-vetted against national databases and employment history."
-              },
-              {
-                icon: <FiZap className="w-8 h-8 text-yellow-400" />,
-                title: "Instant Verification",
-                desc: "Reduce background check time from weeks to seconds with our proprietary digital credit system."
-              },
-              {
-                icon: <FiTrendingUp className="w-8 h-8 text-yellow-400" />,
-                title: "Career Growth",
-                desc: "A high EVP score gives you priority access and higher trust ratings with top-tier MNCs."
-              }
-            ].map((feature, idx) => (
-              <motion.div 
-                key={idx}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="p-8 rounded-2xl bg-gradient-to-b from-[#112240] to-transparent border border-white/5 hover:border-yellow-400/30 transition-colors"
-              >
-                <div className="mb-6">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-                <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ================= JOBS SECTION ================= */}
       <section className="py-32 px-6 bg-[#0a192f]">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-16">
             <div>
               <h2 className="text-4xl font-bold mb-2">Latest Verified Jobs</h2>
-              <p className="text-slate-400">Opportunities from high-EVP rated companies</p>
+              <p className="text-slate-400">
+                Opportunities from high-EVP rated companies
+              </p>
             </div>
-            <Link to="/jobs" className="text-yellow-400 font-bold flex items-center gap-2 hover:underline">
+            <Link
+              to="/jobs"
+              className="text-yellow-400 font-bold flex items-center gap-2 hover:underline"
+            >
               Explore All <FiArrowRight />
             </Link>
           </div>
@@ -198,7 +161,9 @@ const Home = () => {
                         {job.type || "Full Time"}
                       </span>
 
-                      <h3 className="text-2xl font-bold mt-4 mb-2">{job.title}</h3>
+                      <h3 className="text-2xl font-bold mt-4 mb-2">
+                        {job.title}
+                      </h3>
 
                       <p className="text-slate-300 mb-4 flex items-center">
                         <FiCheckCircle className="inline mr-2 text-green-400" />
@@ -227,64 +192,6 @@ const Home = () => {
           )}
         </div>
       </section>
-
-      {/* ================= STATS SECTION ================= */}
-      <section className="py-20 border-y border-white/10 bg-[#112240]/30">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { label: "Active Professionals", value: "50K+" },
-            { label: "Partner Companies", value: "120+" },
-            { label: "Successful Hires", value: "12K+" },
-            { label: "Trust Score", value: "99.9%" }
-          ].map((stat, i) => (
-            <div key={i}>
-              <div className="text-3xl md:text-4xl font-black text-yellow-400 mb-2">{stat.value}</div>
-              <div className="text-slate-400 text-sm uppercase tracking-widest">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= FINAL CTA ================= */}
-      <section className="py-32 px-6">
-        <div className="max-w-5xl mx-auto rounded-[3rem] bg-gradient-to-br from-yellow-400 to-yellow-600 p-12 md:p-20 text-center text-[#0a192f] relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">Ready to boost your <br/> professional credit?</h2>
-            <p className="text-lg font-medium mb-10 opacity-90 max-w-2xl mx-auto text-[#0a192f]/80">
-              Join thousands of professionals who are securing their future with the EVP Score. 
-              Start your certification journey today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/login" className="bg-[#0a192f] text-white px-10 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-                Create Free Account
-              </Link>
-              <Link to="/about" className="bg-white/20 backdrop-blur-md border border-black/10 px-10 py-4 rounded-full font-bold text-lg hover:bg-white/40 transition-all">
-                Learn More
-              </Link>
-            </div>
-          </div>
-          
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full -mr-32 -mt-32 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-32 -mb-32 blur-3xl" />
-        </div>
-      </section>
-
-      {/* ================= FOOTER ================= */}
-      <footer className="py-12 border-t border-white/5 bg-[#0a192f] text-slate-500 text-sm">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-4">
-            <img src={logo} alt="Logo" className="h-8 opacity-50 grayscale" />
-            <p>© 2025 EVP Score. India's First Employment Credit System.</p>
-          </div>
-          <div className="flex gap-8 font-medium">
-            <a href="#" className="hover:text-yellow-400 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors">Terms</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors">Security</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors">Contact</a>
-          </div>
-        </div>
-      </footer>
 
       {/* ================= MODAL ================= */}
       {selectedJob && (

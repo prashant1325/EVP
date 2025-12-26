@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const connectDB = require("./config/db"); // ✅ ADD THIS
+const connectDB = require("./config/db");
 
 /* ===== ROUTES ===== */
 const adminRoutes = require("./routes/admin.routes");
@@ -12,16 +12,15 @@ const userAuthRoutes = require("./routes/userAuth.routes");
 
 const app = express();
 
-/* ================= CONNECT DATABASE (VERCEL FIX) ================= */
-// ✅ REQUIRED because server.js is NOT used by Vercel
+/* ================= CONNECT DB ================= */
 connectDB();
 
-/* ================= CORS ================= */
+/* ================= CORS (CRITICAL) ================= */
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://YOUR-FRONTEND-NAME.netlify.app"
+      "https://evp-4cgo.vercel.app", // ✅ FRONTEND
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -33,12 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* ================= STATIC FILES ================= */
-/*
-  ⚠️ NOTE FOR VERCEL:
-  Local uploads work in dev.
-  For production → use Cloudinary / S3.
-*/
+/* ================= STATIC ================= */
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "../uploads"))
@@ -50,26 +44,20 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/user", userAuthRoutes);
 
-/* ================= HEALTH CHECK ================= */
+/* ================= HEALTH ================= */
 app.get("/", (req, res) => {
-  res.status(200).send("EVP Backend Running Successfully 🚀");
+  res.send("EVP Backend Running 🚀");
 });
 
-/* ================= 404 HANDLER ================= */
+/* ================= 404 ================= */
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
+  res.status(404).json({ message: "Route not found" });
 });
 
-/* ================= GLOBAL ERROR HANDLER ================= */
+/* ================= ERROR ================= */
 app.use((err, req, res, next) => {
-  console.error("GLOBAL ERROR:", err);
-  res.status(500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
+  console.error(err);
+  res.status(500).json({ message: err.message });
 });
 
 module.exports = app;

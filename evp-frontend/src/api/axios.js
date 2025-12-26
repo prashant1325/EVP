@@ -5,7 +5,7 @@ import axios from "axios";
   ❌ No hardcoded localhost
 */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_URL, // ✅ FIX HERE
   withCredentials: true,
 });
 
@@ -17,11 +17,9 @@ api.interceptors.request.use(
       return config;
     }
 
-    // 🔐 Get tokens
     const adminToken = localStorage.getItem("adminToken");
     const userToken = localStorage.getItem("userToken");
 
-    // 🧠 Priority: admin > user
     if (adminToken) {
       config.headers.Authorization = `Bearer ${adminToken}`;
     } else if (userToken) {
