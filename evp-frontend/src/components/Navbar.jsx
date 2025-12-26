@@ -12,22 +12,29 @@ const Navbar = () => {
 
   /* ================= HOME PAGE SCROLL EFFECT ================= */
   useEffect(() => {
-    // 🔒 Other pages → always solid
     if (!isHome) {
       setScrolled(true);
       return;
     }
 
-    // 🏠 Home page → transparent → solid on scroll
     const handleScroll = () => {
       setScrolled(window.scrollY > 60);
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // run once on load
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHome]);
+
+  /* ================= HIDE NAVBAR ON DASHBOARD ROUTES ================= */
+  if (
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/superadmin") ||
+    location.pathname.startsWith("/user/dashboard")
+  ) {
+    return null;
+  }
 
   const linkClass = (path) =>
     `relative pb-1 transition-all duration-300 ${
@@ -49,7 +56,6 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
         {/* LOGO */}
         <Link to="/" className="flex items-center">
           <img
@@ -98,9 +104,15 @@ const Navbar = () => {
         <div className="bg-slate-900 px-6 pb-6 pt-4 space-y-4 text-white">
           <Link to="/" onClick={() => setOpen(false)}>Home</Link>
           <Link to="/about" onClick={() => setOpen(false)}>About</Link>
-          <Link to="/contact" onClick={() => setOpen(false)} className="flex items-center gap-2">
+
+          <Link
+            to="/contact"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2"
+          >
             <Phone size={18} /> Contact
           </Link>
+
           <Link
             to="/login"
             onClick={() => setOpen(false)}

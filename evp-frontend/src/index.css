@@ -1,3 +1,64 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ================= FORM COMPONENTS ================= */
+@layer components {
+  /* ===== INPUT / SELECT ===== */
+  .input {
+    @apply w-full px-4 py-3 rounded-lg
+      bg-slate-800 text-white placeholder-gray-400
+      border border-slate-700
+      outline-none text-sm
+      transition duration-200;
+  }
+
+  /* 🔥 FOCUS (YELLOW – NO BLUE) */
+  .input:focus {
+    @apply border-yellow-400 ring-2 ring-yellow-400/30;
+  }
+
+  .input:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* ===== SELECT FIX ===== */
+  select.input {
+    @apply cursor-pointer;
+  }
+
+  /* ===== FILE UPLOAD ===== */
+  .upload {
+    @apply flex items-center justify-center gap-2
+      px-4 py-3 rounded-lg
+      bg-slate-800 text-gray-300
+      border border-dashed border-slate-600
+      cursor-pointer text-sm
+      transition duration-200;
+  }
+
+  /* 🔥 HOVER (YELLOW – NO BLUE) */
+  .upload:hover {
+    @apply border-yellow-400 text-yellow-400 bg-slate-800/80;
+  }
+
+  /* ===== SECTION CARD LOOK ===== */
+  section {
+    @apply bg-slate-900/60 border border-white/10 rounded-xl p-6;
+  }
+
+  /* ===== SECTION TITLE ===== */
+  section h2 {
+    @apply flex items-center gap-2;
+  }
+}
+
+/* ================= GLOBAL FIX ================= */
+* {
+  outline: none;
+}
+
+a:focus,
+button:focus {
+  box-shadow: none;
+}
