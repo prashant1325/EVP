@@ -1,4 +1,19 @@
+import React, { useMemo } from "react";
+
 const EmployeeTable = ({ employees }) => {
+  // Generate EVP score between 300–900
+  const generateEVPScore = () => {
+    return Math.floor(Math.random() * (900 - 300 + 1)) + 300;
+  };
+
+  // Ensure EVP score stays stable per employee
+  const employeesWithScore = useMemo(() => {
+    return employees?.map((emp) => ({
+      ...emp,
+      evpScore: emp.evpScore ?? generateEVPScore(),
+    }));
+  }, [employees]);
+
   // If no employees yet
   if (!employees || employees.length === 0) {
     return (
@@ -19,14 +34,14 @@ const EmployeeTable = ({ employees }) => {
             <th className="p-3 text-left">Age</th>
             <th className="p-3 text-left">Address</th>
             <th className="p-3 text-left">Salary</th>
+            <th className="p-3 text-left">EVP Score</th>
             <th className="p-3 text-left">Offer Letter</th>
             <th className="p-3 text-left">Salary Slip</th>
-            <th className="p-3 text-left">Signature</th>
           </tr>
         </thead>
 
         <tbody className="bg-slate-800">
-          {employees.map((emp, index) => (
+          {employeesWithScore.map((emp, index) => (
             <tr
               key={index}
               className="border-t border-slate-700 hover:bg-slate-700/50 transition"
@@ -63,6 +78,11 @@ const EmployeeTable = ({ employees }) => {
                 {emp.salary ? `₹ ${emp.salary}` : "-"}
               </td>
 
+              {/* EVP SCORE */}
+              <td className="p-3 font-bold text-yellow-400">
+                {emp.evpScore}
+              </td>
+
               {/* OFFER LETTER */}
               <td className="p-3">
                 {emp.offerLetter ? (
@@ -90,19 +110,6 @@ const EmployeeTable = ({ employees }) => {
                   >
                     View
                   </a>
-                ) : (
-                  "-"
-                )}
-              </td>
-
-              {/* SIGNATURE */}
-              <td className="p-3">
-                {emp.signature ? (
-                  <img
-                    src={emp.signature}
-                    alt="Signature"
-                    className="h-8 object-contain bg-white p-1 rounded"
-                  />
                 ) : (
                   "-"
                 )}

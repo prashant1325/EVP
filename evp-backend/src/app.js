@@ -8,6 +8,8 @@ const adminRoutes = require("./routes/admin.routes");
 const jobRoutes = require("./routes/job.routes");
 const applicationRoutes = require("./routes/jobApplication.routes"); // ✅ ADD
 
+
+
 const app = express();
 
 /* ================= CORS ================= */
@@ -31,7 +33,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/admin", adminRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes); // ✅ ADD
-
+app.use("/api/user", require("./routes/userAuth.routes"));
 /* ================= HEALTH CHECK ================= */
 app.get("/", (req, res) => {
   res.status(200).send("EVP Backend Running Successfully 🚀");

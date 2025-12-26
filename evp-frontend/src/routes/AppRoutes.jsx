@@ -8,7 +8,6 @@ import Login from "../pages/Login";
 
 /* ===== USER AUTH ===== */
 import UserLogin from "../auth/user/UserLogin";
-import UserRegister from "../auth/user/UserRegister";
 
 /* ===== ADMIN AUTH ===== */
 import AdminLogin from "../auth/admin/AdminLogin";
@@ -27,10 +26,13 @@ import SuperAdminDashboard from "../dashboards/SuperAdminDashboard";
 import AdminPostJob from "../components/admin/AdminPostJob";
 import AdminJobList from "../components/admin/AdminJobList";
 import AdminEditJob from "../components/admin/AdminEditJob";
-import AdminApplications from "../components/admin/AdminApplications"; // ✅ ADD
+import AdminApplications from "../components/admin/AdminApplications";
 
-/* ===== PROTECTED ROUTE ===== */
-import ProtectedRoute from "../components/ProtectedRoute";
+/* ===== PROTECTED ROUTES ===== */
+// ✅ ADMIN guard (existing file)
+import AdminProtectedRoute from "../components/ProtectedRoute";
+// ✅ USER guard (new file)
+import UserProtectedRoute from "../components/UserProtectedRoute";
 
 const AppRoutes = () => {
   return (
@@ -43,7 +45,6 @@ const AppRoutes = () => {
 
       {/* ================= USER AUTH ================= */}
       <Route path="/user/login" element={<UserLogin />} />
-      <Route path="/user/register" element={<UserRegister />} />
 
       {/* ================= ADMIN AUTH ================= */}
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -57,9 +58,9 @@ const AppRoutes = () => {
       <Route
         path="/user/dashboard"
         element={
-          <ProtectedRoute role="user">
+          <UserProtectedRoute>
             <UserDashboard />
-          </ProtectedRoute>
+          </UserProtectedRoute>
         }
       />
 
@@ -67,9 +68,9 @@ const AppRoutes = () => {
       <Route
         path="/admin/dashboard"
         element={
-          <ProtectedRoute role="admin">
+          <AdminProtectedRoute>
             <AdminDashboard />
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 
@@ -77,37 +78,36 @@ const AppRoutes = () => {
       <Route
         path="/admin/post-job"
         element={
-          <ProtectedRoute role="admin">
+          <AdminProtectedRoute>
             <AdminPostJob />
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 
       <Route
         path="/admin/jobs"
         element={
-          <ProtectedRoute role="admin">
+          <AdminProtectedRoute>
             <AdminJobList />
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 
       <Route
         path="/admin/jobs/edit/:id"
         element={
-          <ProtectedRoute role="admin">
+          <AdminProtectedRoute>
             <AdminEditJob />
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 
-      {/* ================= ADMIN APPLICATIONS ================= */}
       <Route
         path="/admin/applications"
         element={
-          <ProtectedRoute role="admin">
+          <AdminProtectedRoute>
             <AdminApplications />
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 
@@ -115,9 +115,9 @@ const AppRoutes = () => {
       <Route
         path="/superadmin/dashboard"
         element={
-          <ProtectedRoute role="superadmin">
+          <AdminProtectedRoute>
             <SuperAdminDashboard />
-          </ProtectedRoute>
+          </AdminProtectedRoute>
         }
       />
 
