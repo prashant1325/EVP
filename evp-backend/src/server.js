@@ -2,13 +2,12 @@ const dotenv = require("dotenv");
 const app = require("./app");
 const connectDB = require("./config/db");
 
-// Load environment variables
+// Load env variables (LOCAL only)
 dotenv.config();
 
-/* ================= START SERVER ================= */
+/* ================= START SERVER (LOCAL DEV) ================= */
 const startServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB();
 
     const PORT = process.env.PORT || 5000;
@@ -17,7 +16,7 @@ const startServer = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("❌ Server failed to start:", error.message);
+    console.error("❌ Server failed to start:", error);
     process.exit(1);
   }
 };
