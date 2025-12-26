@@ -1,25 +1,26 @@
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
 
-/* ================= ENSURE UPLOAD DIRECTORY EXISTS ================= */
-const uploadDir = path.join(process.cwd(), "uploads", "cv");
+/*
+  ✅ Vercel-safe upload middleware
+  ❌ No fs / mkdir / disk writes in production
+*/
 
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-/* ================= MULTER STORAGE ================= */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // ✅ guaranteed to exist
+    if (process.env.NODE_ENV === "production") {
+      // 🚫 Vercel does not allow file system writes
+      return cb(new Error("File uploads are disabled in production"), null);
+    }
+
+    // ✅ Local development only
+    cb(null, "uploads/cv");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-/* ================= MULTER CONFIG ================= */
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
